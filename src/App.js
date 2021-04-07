@@ -1,63 +1,50 @@
-import "./styles.css";
-import { useCallback, useState } from "react";
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
+
+const users = [
+  { id: "a", name: "Robin" },
+  { id: "b", name: "Dennis" }
+];
 
 const App = () => {
-  const [users, setUsers] = React.useState([
-    { id: "a", name: "Robin" },
-    { id: "b", name: "Dennis" }
-  ]);
-
   const [text, setText] = React.useState("");
+  const [search, setSearch] = React.useState("");
 
   const handleText = (event) => {
     setText(event.target.value);
   };
 
-  const handleAddUser = () => {
-    setUsers(users.concat({ id: uuidv4(), name: text }));
+  const handleSearch = () => {
+    setSearch(text);
   };
-  // callback function
-  const callback = (user, id) => {
-    return user.id !== id;
-  };
-  const handleRemove = (id) => {
-    // using callback function to filter.
-    setUsers(users.filter((user) => callback(user, id)));
-  };
+
+  const filteredUsers = users.filter((user) => {
+    return user.name.toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
     <div>
       <input type="text" value={text} onChange={handleText} />
-      <button type="button" onClick={handleAddUser}>
-        Add User
+      <button type="button" onClick={handleSearch}>
+        Search
       </button>
 
-      <List list={users} onRemove={handleRemove} />
+      <List list={filteredUsers} />
     </div>
   );
 };
 
-const List = ({ list, onRemove }) => {
+const List = ({ list }) => {
   return (
     <ul>
       {list.map((item) => (
-        <ListItem key={item.id} item={item} onRemove={onRemove} />
+        <ListItem key={item.id} item={item} />
       ))}
     </ul>
   );
 };
 
-const ListItem = ({ item, onRemove }) => {
-  return (
-    <li>
-      {item.name}
-      <button type="button" onClick={() => onRemove(item.id)}>
-        Remove
-      </button>
-    </li>
-  );
+const ListItem = ({ item }) => {
+  return <li>{item.name}</li>;
 };
 
 export default App;
